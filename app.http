@@ -1,0 +1,102 @@
+### Authentication APIs ###
+
+### Register new user
+POST http://localhost:3000/api/register
+Content-Type: application/json
+
+{
+    "username": "mahesh",
+    "password": "mahesh123",
+    "role": "admin"
+}
+
+### Login
+POST http://localhost:3000/api/login
+Content-Type: application/json
+
+{
+    "username": "mahesh",
+    "password": "mahesh123"
+}
+
+### Store the received token from login response
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzM2NjQyNTE1LCJleHAiOjE3MzY3Mjg5MTV9.5o9rYtoPeU59Vbd7XeIgLQ4sQ79v8m2j0nKAS9tP_yk // Replace with your actual token
+
+### Transaction APIs ###
+
+### Fetch all transactions
+GET http://localhost:3000/api/transactions
+Authorization: Bearer {{authToken}}
+
+### Fetch transactions by school
+GET http://localhost:3000/api/transactions/school/67308b27e9bbcdf5f22d24c23
+Authorization: Bearer {{authToken}}
+
+### Check transaction status by custom order ID
+GET http://localhost:3000/api/transaction/status/test1
+Authorization: Bearer {{authToken}}
+
+### Webhook for transaction status update
+POST http://localhost:3000/api/webhook/transaction
+Content-Type: application/json
+
+{
+    "status": 200,
+    "order_info": {
+        "order_id": "6730d9b926c65c39b0ee0149",
+        "order_amount": 10000,
+        "transaction_amount": 10100,
+        "gateway": "CASHFREE",
+        "bank_reference": "YESBNK221"
+    }
+}
+
+### Manual status update
+POST http://localhost:3000/api/transaction/status/update
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "customOrderId": "test1",
+    "status": "SUCCESS",
+    "payment_method": "upi"
+}
+
+### Example Queries with Sample Data ###
+
+### Fetch transactions for a specific school
+GET http://localhost:3000/api/transactions/school/67308b27e9bbcdf5f22d24c19
+Authorization: Bearer {{authToken}}
+
+### Check status of a specific transaction
+GET http://localhost:3000/api/transaction/status/test20
+Authorization: Bearer {{authToken}}
+
+### Update status with all optional fields
+POST http://localhost:3000/api/transaction/status/update
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+    "customOrderId": "test20",
+    "status": "SUCCESS",
+    "payment_method": "upi",
+    "transaction_amount": 10000,
+    "bank_reference": "YESBNK240"
+}
+
+### Webhook example with failure status
+POST http://localhost:3000/api/webhook/transaction
+Content-Type: application/json
+
+{
+    "status": 200,
+    "order_info": {
+        "order_id": "6730d9b926c65c39b0ee0169",
+        "order_amount": 10000,
+        "transaction_amount": 0,
+        "gateway": "CASHFREE",
+        "bank_reference": "FAILED_TXN",
+        "status": "FAILURE"
+    }
+}
